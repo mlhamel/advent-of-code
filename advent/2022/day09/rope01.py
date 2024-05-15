@@ -84,5 +84,5 @@ R 2
 
 if __name__ == "__main__":
     parsed_data = parse_raw_data(raw_data=raw_data1)
-    if start_position := make_board(6, 5):
+    if start_position := make_board(6, 5, parsed_data):
         print(resolve(start_position, parsed_data))
