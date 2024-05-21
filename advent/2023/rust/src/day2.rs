@@ -6,6 +6,50 @@ struct Colors {
     pub blue: i32,
 }
 
+pub fn second_1_1(content: String) -> Result<i32, i32> {
+    println!("Day 2.1");
+
+    let re = Regex::new(r"([0-9]+)\s(blue|red|green)([,;\s]|$)").unwrap();
+
+    let color_sum = content.split("\n").map(|line| {
+        let mut max_colors = Colors {
+            red: 0,
+            green: 0,
+            blue: 0,
+        };
+
+        for set in line.split(";") {
+            for cap in re.captures_iter(set) {
+                let number = cap[1].parse::<i32>().unwrap();
+                let color = &cap[2];
+
+                match color {
+                    "red" => {
+                        if max_colors.red < number {
+                            max_colors.red = number;
+                        }
+                    },
+                    "green" => {
+                        if max_colors.green < number {
+                            max_colors.green = number;
+                        }
+                    },
+                    "blue" => {
+                        if max_colors.blue < number {
+                            max_colors.blue = number;
+                        }
+                    },
+                    _ => {}
+                }
+            }
+        }
+
+        max_colors.red * max_colors.green * max_colors.blue
+    }).sum::<i32>();
+
+    Ok(color_sum)
+}
+
 pub fn second_1_0(
     content: String,
     parameters: String
