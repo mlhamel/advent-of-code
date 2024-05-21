@@ -8,9 +8,14 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let day: &String = &args[1]; // day
     let input: &String = &args[2]; // input
+    let parameters: &Option<&String> = &args.get(3); // parameters
 
     let contents = fs::read_to_string(input)
         .expect("Should have been able to read the file");
+
+    let parsed_parameters: String = parameters
+        .unwrap_or(&String::from(""))
+        .to_string();
 
     println!("Day: {:?}", day);
     println!("Input: {:?}", input);
@@ -21,7 +26,7 @@ fn main() {
     let value = match day_num {
         "1.0" => day1::first_1_0(contents),
         "1.1" => day1::first_1_1(contents),
-        "2.0" => day2::second_1_0(contents),
+        "2.0" => day2::second_1_0(contents, parsed_parameters),
         _ => Err(-1)
     };
 
