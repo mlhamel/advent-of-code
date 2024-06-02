@@ -3,6 +3,7 @@ use std::fs;
 
 pub mod day1;
 pub mod day2;
+pub mod day3;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -28,6 +29,7 @@ fn main() {
         "1.1" => day1::first_1_1(contents),
         "2.0" => day2::second_1_0(contents, parsed_parameters),
         "2.1" => day2::second_1_1(contents),
+        "3.0" => day3::third_1_0(contents),
         _ => Err(-1)
     };
 
