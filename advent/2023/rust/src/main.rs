@@ -30,6 +30,7 @@ fn main() {
         "2.0" => day2::second_1_0(contents, parsed_parameters),
         "2.1" => day2::second_1_1(contents),
         "3.0" => day3::third_1_0(contents),
+        "3.1" => day3::third_1_1(contents),
         _ => Err(-1)
     };
 
