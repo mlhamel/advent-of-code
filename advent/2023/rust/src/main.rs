@@ -33,6 +33,7 @@ fn main() {
         "3.0" => day3::third_1_0(contents),
         "3.1" => day3::third_1_1(contents),
         "4.0" => day4::four_1_0(contents),
+        "4.1" => day4::four_1_1(contents),
         _ => Err(-1)
     };
 
