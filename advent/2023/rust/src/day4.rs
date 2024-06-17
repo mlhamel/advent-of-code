@@ -1,20 +1,28 @@
 use regex::Regex;
 
-use std::{collections::HashSet, str::Lines};
+use std::collections::HashSet;
 
 struct Day4 {
     content: String,
-    counter: i32,
     points: Vec<i32>,
+    lines_vect: Vec<String>,
 }
 
 impl Day4 {
     fn new(content: String) -> Day4 {
-        let line_count = content.lines().count();
+        let cloned_content = content.clone();
+        let line_count = cloned_content.lines().count();
+        let new_lines_vect: Vec<String> = cloned_content
+            .lines()
+            .collect::<Vec<&str>>()
+            .iter()
+            .map(|line| line.to_string())
+            .collect::<Vec<String>>();
+
         Day4{
-            content: content,
-            counter: 0,
+            content: cloned_content,
             points: vec![0; line_count],
+            lines_vect: new_lines_vect,
         }
     }
 
@@ -25,29 +33,16 @@ impl Day4 {
     }
 
     pub fn get_winning_cards(&mut self) -> i32 {
-        let cloned_content = self.content.clone();
-        let lines_vect: Vec<&str> = cloned_content.lines().collect();
-        let length = lines_vect.len();
+        let length = self.lines_vect.len();
+
         for index in 0..length  {
-            let cloned_content = self.content.clone();
-            self.calculate_winning_cards(&cloned_content.lines().collect::<Vec<&str>>(), length-index-1);
+            self.calculate_winning_cards(length-index-1);
         }
         return self.points.iter().sum();
     }
 
-    fn calculate_winning_cards(&mut self, lines_vect: &Vec<&str>, index: usize) {
-        /*
-         * Card 1: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-         * Card 2: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-         * Card 3: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-         * Card 4: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 | 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-         *             7 6
-         *            4 5
-         *             3
-         *             2
-         */
-        println!("Index: {:?}", index);
-        let line: &str = lines_vect.get(index).unwrap();
+    fn calculate_winning_cards(&mut self, index: usize) {
+        let line: &str = self.lines_vect.get(index).unwrap();
 
         Regex::new(r"Card([\s\d]*): ([\d\s]*)\|([\d\s]*)$")
             .unwrap()
@@ -65,11 +60,9 @@ impl Day4 {
 
                 for x in 1..power+1 {
                     if index + x as usize <= self.points.len() {
-                        println!("power: {:?} -> {:?}", index+x as usize, self.points[index+x as usize]);
                         self.points[index] += self.points[index+x as usize];
                     }
                 }
-                println!("Points: {:?} -> {:?}", self.points, power);
             });
     }
 }
