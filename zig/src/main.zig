@@ -94,12 +94,14 @@ pub fn main() !void {
 
     std.debug.print("Advent of Code {d} - Part {d}\n", .{ config.year, config.part });
 
+    var allocated_buffer: ?[]u8 = null;
     const input_path = config.input_path orelse blk: {
         const buffer = try allocator.alloc(u8, 256);
+        allocated_buffer = buffer;
         const path = try std.fmt.bufPrint(buffer, "inputs/{d}/day01.txt", .{config.year});
         break :blk path;
     };
-    defer if (config.input_path == null) allocator.free(input_path);
+    defer if (allocated_buffer) |buffer| allocator.free(buffer);
 
     const input = try readFile(allocator, input_path);
     defer allocator.free(input);
