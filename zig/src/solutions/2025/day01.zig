@@ -77,11 +77,6 @@ pub fn part2(allocator: std.mem.Allocator, input: []const u8) !void {
 
         std.debug.print("  Rotation: {d}\n", .{rotation});
 
-        // Count zero crossings based on the R1000 example:
-        // R1000 from position 50 hits 0 exactly 10 times during rotation
-        // This suggests we count floor(abs_rotation / 100) for complete cycles
-        // Plus 1 more if the partial rotation crosses a boundary
-
         var zero_crossings: i32 = 0;
 
         if (rotation != 0) {
