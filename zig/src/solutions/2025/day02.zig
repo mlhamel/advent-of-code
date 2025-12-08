@@ -41,10 +41,8 @@ pub fn processItem(item: i64) ?i64 {
     const halves = splitIntoHalves(item, digits);
 
     if (halves.left == halves.right) {
-        std.debug.print("  -> Lucky number! {d} {d}\n", .{ halves.left, halves.right });
         return item;
     } else {
-        std.debug.print("  -> Not a lucky number.\n", .{});
         return null;
     }
 }
@@ -68,9 +66,6 @@ pub fn processRange(first_num_str: []const u8, second_num_str: []const u8) !i64 
         std.debug.print("Error parsing end: '{s}'\n", .{end_str});
         return err;
     };
-
-    std.debug.print("as int: {d}\n", .{start});
-    std.debug.print("as int2: {d}\n", .{end});
 
     if (start <= end) {
         var v: i64 = start;
@@ -102,8 +97,6 @@ pub fn part1(allocator: std.mem.Allocator, input: []const u8) !void {
     while (it.next()) |token| {
         if (token.len == 0) continue;
         const t = trimWhitespace(token);
-        std.debug.print("token: {s}\n", .{t});
-
         var sub_it = std.mem.splitSequence(u8, t, "-");
         const first_num_str = sub_it.next() orelse {
             std.debug.print("Warning: missing first number in token '{s}'\n", .{t});
