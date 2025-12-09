@@ -1,5 +1,12 @@
 const std = @import("std");
 
+const ItemProcessor = fn (item: i64) ?i64;
+
+const Pair = struct {
+    first: i64,
+    second: i64,
+};
+
 fn trimWhitespace(s: []const u8) []const u8 {
     var i: usize = 0;
     while (i < s.len and (s[i] == ' ' or s[i] == '\t' or s[i] == '\r' or s[i] == '\n')) i += 1;
@@ -47,7 +54,7 @@ pub fn processItem(item: i64) ?i64 {
     }
 }
 
-pub fn processRange(first_num_str: []const u8, second_num_str: []const u8) !i64 {
+pub fn processRange(processor: ItemProcessor, first_num_str: []const u8, second_num_str: []const u8) !i64 {
     const start_str = trimWhitespace(first_num_str);
     const end_str = trimWhitespace(second_num_str);
 
@@ -70,7 +77,7 @@ pub fn processRange(first_num_str: []const u8, second_num_str: []const u8) !i64 
     if (start <= end) {
         var v: i64 = start;
         while (v <= end) : (v += 1) {
-            const res = processItem(v);
+            const res = processor(v);
             if (res) |val| {
                 result_sum += val;
             }
@@ -78,7 +85,7 @@ pub fn processRange(first_num_str: []const u8, second_num_str: []const u8) !i64 
     } else {
         var v: i64 = start;
         while (v >= end) : (v -= 1) {
-            const res = processItem(v);
+            const res = processor(v);
             if (res) |val| {
                 result_sum += val;
             }
@@ -87,12 +94,12 @@ pub fn processRange(first_num_str: []const u8, second_num_str: []const u8) !i64 
     return result_sum;
 }
 
-pub fn part1(allocator: std.mem.Allocator, input: []const u8) !void {
-    _ = allocator;
-
+pub fn make_pairs(allocator: std.mem.Allocator, input: []const u8) ![]Pair {
     const delim = ",";
     var it = std.mem.splitSequence(u8, input, delim);
-    var item_sum: i64 = 0;
+
+    var pairs = std.ArrayList(Pair){};
+    defer pairs.deinit(allocator);
 
     while (it.next()) |token| {
         if (token.len == 0) continue;
@@ -107,7 +114,37 @@ pub fn part1(allocator: std.mem.Allocator, input: []const u8) !void {
             continue;
         };
 
-        item_sum += try processRange(first_num_str, second_num_str);
+        const first_num = std.fmt.parseInt(i64, first_num_str, 10) catch |err| {
+            std.debug.print("Error parsing first number in token '{s}': {s}\n", .{ t, @errorName(err) });
+            continue;
+        };
+        const second_num = std.fmt.parseInt(i64, second_num_str, 10) catch |err| {
+            std.debug.print("Error parsing second number in token '{s}': {s}\n", .{ t, @errorName(err) });
+            continue;
+        };
+
+        const pair = Pair{
+            .first = first_num,
+            .second = second_num,
+        };
+
+        try pairs.append(allocator, pair);
+    }
+    return try pairs.toOwnedSlice(allocator);
+}
+
+pub fn part1(allocator: std.mem.Allocator, input: []const u8) !void {
+    var item_sum: i64 = 0;
+
+    const pairs = try make_pairs(allocator, input);
+    defer allocator.free(pairs);
+    for (pairs) |pair| {
+        const first_num_str = std.fmt.allocPrint(allocator, "{d}", .{pair.first}) catch unreachable;
+        defer allocator.free(first_num_str);
+        const second_num_str = std.fmt.allocPrint(allocator, "{d}", .{pair.second}) catch unreachable;
+        defer allocator.free(second_num_str);
+
+        item_sum += try processRange(processItem, first_num_str, second_num_str);
     }
 
     std.debug.print("Final sum of lucky numbers: {d}\n", .{item_sum});
