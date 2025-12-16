@@ -1,6 +1,7 @@
 const std = @import("std");
 const day01 = @import("solutions/2025/day01.zig");
 const day02 = @import("solutions/2025/day02.zig");
+const day03 = @import("solutions/2025/day03.zig");
 
 fn printUsage() void {
     std.debug.print(
@@ -118,6 +119,13 @@ fn runSolution(allocator: std.mem.Allocator, input: []const u8, day: u8, part: u
                 try day02.part1(allocator, input);
             } else {
                 try day02.part2(allocator, input);
+            }
+        },
+        3 => {
+            if (part == 1) {
+                try day03.part1(allocator, input);
+            } else {
+                try day03.part2(allocator, input);
             }
         },
         else => {
